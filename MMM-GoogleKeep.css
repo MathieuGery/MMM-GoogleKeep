@@ -1,0 +1,12 @@
+.MMM-GoogleKeep td {
+	padding-left: 6px;
+	padding-right: 6px;
+}
+
+.MMM-GoogleKeep .header-row {
+	font-weight: bold;
+}
+
+.MMM-GoogleKeep .stats-row {
+	color: #fff;
+}

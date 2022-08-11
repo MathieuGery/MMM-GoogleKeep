@@ -1,0 +1,27 @@
+{
+	"name": "MMM-GoogleKeep",
+	"version": "1.0.0",
+	"description": "A MagicMirror2 module that shows your item list from Google Keep",
+	"keywords": [
+		"magic mirror",
+		"google keep",
+		"notes",
+		"keep",
+		"google"
+	],
+	"homepage": "https://github.com/MathieuGery/MMM-GoogleKeep#readme",
+	"bugs": {
+		"url": "https://github.com/MathieuGery/MMM-GoogleKeep/issues"
+	},
+	"license": "MIT",
+	"author": "Mathieu Gery",
+	"main": "MMM-GoogleKeep.js",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/MathieuGery/MMM-GoogleKeep"
+	},
+	"dependencies": {
+		"request": "^2.88.2",
+		"request-promise": "^4.2.6"
+	}
+}
