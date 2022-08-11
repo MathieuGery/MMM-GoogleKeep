@@ -10,11 +10,11 @@ Module.register('MMM-GoogleKeep', {
 	defaults: {
 		user: 'user@gmail.com',
 		password: 'your_secret_password',
+		noteName: 'checklist',
 		fetchInterval: 10 * 60 * 1000  // In millisecs. Default every ten minutes.
 	},
 
 	getStyles: function() {
-		console.log("qldjsfoiqsjeiofj qmsjdfjqsljse ijfmjqsjidjfmlqijseimfjm")
 		return [ 'modules/MMM-GoogleKeep/MMM-GoogleKeep.css', 'font-awesome.css' ];
 	},
 
@@ -27,12 +27,11 @@ Module.register('MMM-GoogleKeep', {
 	},
 
 	// Notification from node_helper.js.
-	// The stats is received here. Then module is redrawn.
+	// The note data is received here. Then module is redrawn.
 	// @param notification - Notification type.
-	// @param payload - Contains module instance identifier + an array of user stats.
-	//                  Each item in the array contains username / level / trophies / totalVictories.
+	// @param payload - Contains module instance identifier + noteName.
 	socketNotificationReceived: function(notification, payload) {
-		if (notification === 'STATS_RESULT') {
+		if (notification === 'NOTE_RESULT') {
 			if (null == payload)
 				return;
 
@@ -48,6 +47,7 @@ Module.register('MMM-GoogleKeep', {
 			if (0 === payload.stats.length)
 				return;
 
+			console.log(payload.stats)
 			this.stats = payload.stats;
 			this.updateDom(0);
 		}
@@ -66,24 +66,24 @@ Module.register('MMM-GoogleKeep', {
 
 		let headerRow = document.createElement('tr');
 		headerRow.className = 'normal header-row';
-		// this.createTableCell(headerRow, this.translate('USERNAME'), true, 'username-header', 'center');
+		this.createTableCell(headerRow, this.translate('USERNAME'), true, 'username-header', 'center');
 		// this.createTableCell(headerRow, this.translate('LEVEL'), this.config.showLevel, 'level-header', 'center');
 		// this.createTableCell(headerRow, this.translate('TROPHIES'), this.config.showTrophies, 'trophies-header', 'center');
 		// this.createTableCell(headerRow, this.translate('TOTAL_VICTORIES'), this.config.showTotalVictories, 'total-victories-header', 'center');
-		// wrapper.appendChild(headerRow);
+		wrapper.appendChild(headerRow);
 
-		// for (let i = 0; i < this.stats.length; ++i) {
-		// 	let row = document.createElement('tr');
-		// 	row.className = 'normal bright stats-row';
+		for (let i = 0; i < this.stats.length; ++i) {
+			let row = document.createElement('tr');
+			row.className = 'normal bright';
 
-		// 	const stat = this.stats[i];
-		// 	this.createTableCell(row, stat.username, true, 'username', 'left');
-		// 	this.createNumberTableCell(row, stat.level, this.config.showLevel, 'level');
-		// 	this.createNumberTableCell(row, stat.trophies, this.config.showTrophies, 'trophies');
-		// 	this.createNumberTableCell(row, stat.totalVictories, this.config.showTotalVictories, 'total-victories');
+			const stat = this.stats[i];
+			this.createTableCell(row, stat, true, 'username', 'left');
+			// this.createNumberTableCell(row, stat.level, this.config.showLevel, 'level');
+			// this.createNumberTableCell(row, stat.trophies, this.config.showTrophies, 'trophies');
+			// this.createNumberTableCell(row, stat.totalVictories, this.config.showTotalVictories, 'total-victories');
 
-		// 	wrapper.appendChild(row);
-		// }
+			wrapper.appendChild(row);
+		}
 
 		return wrapper;
 	},
@@ -93,20 +93,22 @@ Module.register('MMM-GoogleKeep', {
 		this.stats = null;
 
 		// Tell node_helper to load stats at startup.
-		this.sendSocketNotification('GET_STATS', { identifier: this.identifier,
-		                                           user: this.config.user,
-		                                           password: this.config.password
+		this.sendSocketNotification('GET_NOTE', { identifier: this.identifier,
+													user: this.config.user,
+													password: this.config.password,
+													noteName: this.config.noteName
 												});
 
 		// Make sure stats are reloaded at user specified interval.
 		let interval = Math.max(this.config.fetchInterval, 1000);  // In millisecs. < 1 min not allowed.
 		let self = this;
-		// setInterval(function() {
-		// 	self.sendSocketNotification('GET_STATS', { identifier: self.identifier,
-		// 	                                           apiToken: self.config.apiToken,
-		// 	                                           userTags: self.config.userTags,
-		// 	                                           sortBy: self.config.sortBy });
-		// }, interval); // In millisecs.
+		setInterval(function() {
+			self.sendSocketNotification('GET_NOTE', { identifier: this.identifier,
+														user: this.config.user,
+														password: this.config.password,
+														noteName: this.config.noteName
+													});
+		}, interval); // In millisecs.
 	},
 
 	// Creates a table row cell.

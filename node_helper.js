@@ -1,7 +1,7 @@
 /* Magic Mirror
  * Module: MMM-BrawlStars
  *
- * By Johan Persson, https://github.com/retroflex
+ * By Mathieu Gery, https://github.com/MathieuGery
  * MIT Licensed.
  */
 
@@ -15,32 +15,16 @@ module.exports = NodeHelper.create({
 		console.log('Starting node_helper for: ' + this.name);
 	},
 
-	// Extracts JSON into the relevant stats.
-	// @param json - The full JSON for the user.
-	// @return Object with stats we want to show.
-	extractStats: function(json) {
-		let totalVictories = 0;
-
-		if (json["3vs3Victories"] != null)              totalVictories += json["3vs3Victories"];
-		if (json.soloVictories != null)  totalVictories += json.soloVictories;
-		if (json.duoVictories != null)   totalVictories += json.duoVictories;
-
-		const stats = { username: json.name,
-		                level: json.expLevel,
-		                trophies: json.trophies,
-		                totalVictories: totalVictories };
-		return stats;
-	},
-
-	// Gets Google Keep user stats from API and adds them to an array.
-	// The array is then sent to the client (to MMM-BrawlStars.js).
-	// @param payload - identifier (string), apiToken (string), userTags (array of strings), sortBy (string).
+	// Gets Google Keep note message from API and adds them to an array.
+	// The array is then sent to the client (to MMM-GoogleKeep.js).
+	// @param payload - identifier (string), user (string), password (string), noteName (string).
 	getStats: function(payload) {
 		let identifier = payload.identifier;
 		let user = payload.user;
 		let password = payload.password;
 
-		console.log("je suis la ", user, password)
+		console.log('je suis la ', user, password)
+		let data = ['coucou', 'test']
 		// let promises = [];
 		// for (let i = 0; i < userTags.length; ++i) {
 		// 	const userURL = baseURL + userTags[i];
@@ -68,19 +52,19 @@ module.exports = NodeHelper.create({
 		// 	else if ('level' === payload.sortBy)
 		// 		stats.sort((a, b) => Number(b.level) - Number(a.level));
 
-		// 	this.sendSocketNotification('STATS_RESULT', {identifier: identifier, stats: stats} );
+		this.sendSocketNotification('NOTE_RESULT', {identifier: identifier, stats: data} );
+		console.log("la c'est ma data", data)
 		// }).catch(err => {
 		// 	console.error(this.name + ' error when fetching data: ' + err);
 		// });
 	},
 
-	// Listens to notifications from client (from MMM-BrawlStars.js).
-	// Client sends a notification when it wants download new stats.
-	// @param payload - identifier (string), apiToken (string), userTags (array of strings), sortBy (string).
+	// Listens to notifications from client (from MMM-GoogleKeep.js).
+	// Client sends a notification when it wants get message from note.
+	// @param payload - identifier (string), user (string), password (string), noteName (string).
 	socketNotificationReceived: function(notification, payload) {
-		if (notification === 'GET_STATS') {
+		if (notification === 'GET_NOTE') {
 			this.getStats(payload);
 		}
 	}
-
 });
